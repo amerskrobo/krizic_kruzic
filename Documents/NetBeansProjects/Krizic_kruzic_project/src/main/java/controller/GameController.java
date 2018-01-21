@@ -21,8 +21,8 @@ public class GameController {
    private final AtomicLong counter = new AtomicLong();
    
    
-   @RequestMapping(value="game/new",params={"first","second"},  method=GET )
-   public Game game(@RequestParam("first")String first){
+   @RequestMapping(value="game/new", method=GET )
+   public Game game(@RequestParam(value="first",defaultValue="Computer", required=false) String first,@RequestParam(value="second") String second){
        return new Game(counter.incrementAndGet());
        
    }
