@@ -27,7 +27,7 @@ public class GameController {
    
    private final AtomicLong counter = new AtomicLong();
    Game game;
-   
+   String[][] gameMoves = new String[3][3];
    
    
    @RequestMapping(value="game/new", method=GET )
@@ -56,6 +56,15 @@ public class GameController {
        
    }
    
+   @RequestMapping(value="game/play", method=GET)
+   public void gamePlay(@RequestParam(value="gameId", required=true)long gameId,@RequestParam(value="row",required=true)int row,@RequestParam(value="column",required=true)int column,@RequestParam(value="value",required=true)String value){
+       if(gameId==game.getId()){
+           playHuman(row,column,value);
+           playComputer(row,column,value);
+       }
+       
+   }
+   
    
    public List getStatus(){
        List getStatus = new ArrayList();
@@ -63,6 +72,44 @@ public class GameController {
        getStatus.add(1, "{row:1,column:1,value:0}");
        
        return getStatus;
+   }
+   
+   public void playHuman(int row,int column,String value){
+       
+       for(int i=0;i<3;i++){
+           for(int j=0;j<3;j++){
+               if(i==row-1 && j==column-1){
+                   gameMoves[i][j]=value;
+                   System.out.println( game.getHuman() +" play "+"row: "+i+" column:"+j+" value:"+gameMoves[i][j]);
+                   
+                   
+               }
+           }
+       }
+       
+   }
+   
+   public void playComputer(int row,int column, String value){
+       for(int i=0;i<3;i++){
+           for(int j=0;j<3;j++){
+               if(gameMoves[i][j]==null){
+                   if (value.equals("x")){
+                       gameMoves[i][j]="o";
+                      System.out.println("Computer play "+"row: "+i+" column:"+j+": "+"value: "+gameMoves[i][j]);
+                      return;
+                   }
+                   else{
+                      
+                       gameMoves[i][j]="x";
+                       System.out.println("Computer play"+"row: "+i+" column:"+j+": "+"value:"+gameMoves[i][j]);
+                       return;
+                   }
+                   
+               }
+               
+               
+           }
+       }
    }
    
    
