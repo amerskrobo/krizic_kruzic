@@ -27,7 +27,7 @@ public class GameController {
    
    private final AtomicLong counter = new AtomicLong();
    Game game;
-   String[][] gameMoves = new String[3][3];
+   String[][] gameMoves;
    
    
    @RequestMapping(value="game/new", method=GET )
@@ -35,6 +35,7 @@ public class GameController {
        if(first.equals("computer")&& !second.isEmpty()){
            
            game = new Game(counter.incrementAndGet(),second);
+           gameMoves = new String[3][3];
            return game;
           
        }else{
@@ -61,6 +62,13 @@ public class GameController {
        if(gameId==game.getId()){
            playHuman(row,column,value);
            playComputer(row,column,value);
+           if(checkWinner()!=null){
+               if(checkWinner()==value){
+                   System.out.println("Winner is "+game.getHuman());
+               }else{
+                   System.out.println("Winner is computer");
+               }
+           }
        }
        
    }
@@ -111,7 +119,42 @@ public class GameController {
            }
        }
    }
-   
+   public String checkWinner(){
+       String winner = null;
+       if (gameMoves[0][0]==gameMoves[0][1]&& gameMoves[0][0]==gameMoves[0][2]){
+           winner= gameMoves[0][0];
+           return winner;
+       }
+        if (gameMoves[1][0]==gameMoves[1][1]&& gameMoves[1][0]==gameMoves[1][2]){
+           winner= gameMoves[1][0];
+           return winner;
+       }
+         if (gameMoves[2][0]==gameMoves[2][1]&& gameMoves[2][0]==gameMoves[2][2]){
+           winner= gameMoves[2][0];
+           return winner;
+       }
+        if (gameMoves[0][0]==gameMoves[1][0]&& gameMoves[0][0]==gameMoves[2][0]){
+           winner= gameMoves[0][0];
+           return winner;
+       }
+         if (gameMoves[0][0]==gameMoves[1][0]&& gameMoves[0][0]==gameMoves[2][0]){
+           winner= gameMoves[0][0];
+           return winner;
+       }
+          if (gameMoves[0][1]==gameMoves[1][1]&& gameMoves[0][1]==gameMoves[2][1]){
+           winner= gameMoves[0][1];
+           return winner;
+       }
+           if (gameMoves[0][2]==gameMoves[1][2]&& gameMoves[0][2]==gameMoves[2][2]){
+           winner= gameMoves[0][0];
+           return winner;
+       }
+            if (gameMoves[0][0]==gameMoves[1][1]&& gameMoves[0][0]==gameMoves[2][2]){
+           winner= gameMoves[0][0];
+           return winner;
+       }
+            return null;
+   }
    
    
 }
