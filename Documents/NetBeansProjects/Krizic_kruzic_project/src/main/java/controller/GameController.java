@@ -3,6 +3,7 @@ package controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import jdk.nashorn.internal.ir.RuntimeNode;
@@ -63,7 +64,8 @@ public class GameController {
            playHuman(row,column,value);
            playComputer(row,column,value);
            if(checkWinner()!=null){
-               if(checkWinner()==value){
+               
+               if(checkWinner().equals(value)){
                    System.out.println("Winner is "+game.getHuman());
                }else{
                    System.out.println("Winner is computer");
@@ -121,39 +123,64 @@ public class GameController {
    }
    public String checkWinner(){
        String winner = null;
-       if (gameMoves[0][0]==gameMoves[0][1]&& gameMoves[0][0]==gameMoves[0][2]){
+       
+       
+       if(gameMoves[0][0]!=null && gameMoves[0][1]!=null && gameMoves[0][2]!=null){
+       if (gameMoves[0][0].equals(gameMoves[0][1]) && gameMoves[0][0].equals(gameMoves[0][2])){
            winner= gameMoves[0][0];
            return winner;
        }
-        if (gameMoves[1][0]==gameMoves[1][1]&& gameMoves[1][0]==gameMoves[1][2]){
-           winner= gameMoves[1][0];
-           return winner;
        }
-         if (gameMoves[2][0]==gameMoves[2][1]&& gameMoves[2][0]==gameMoves[2][2]){
+        if(gameMoves[2][0]!=null && gameMoves[2][1]!=null && gameMoves[2][2]!=null){
+         if (gameMoves[2][0].equals(gameMoves[2][1]) && gameMoves[2][0].equals(gameMoves[2][2])){
            winner= gameMoves[2][0];
            return winner;
        }
-        if (gameMoves[0][0]==gameMoves[1][0]&& gameMoves[0][0]==gameMoves[2][0]){
+       }
+         if(gameMoves[1][0]!=null && gameMoves[1][1]!=null && gameMoves[1][2]!=null){
+        if (gameMoves[1][0].equals(gameMoves[1][1]) && gameMoves[1][0].equals(gameMoves[1][2])){
+           winner= gameMoves[1][0];
+           return winner;
+       }
+         }
+        if(gameMoves[0][0]!=null && gameMoves[1][0]!=null && gameMoves[2][0]!=null){
+        if (gameMoves[0][0].equals(gameMoves[1][0]) && gameMoves[0][0].equals(gameMoves[2][0])){
            winner= gameMoves[0][0];
            return winner;
        }
-         if (gameMoves[0][0]==gameMoves[1][0]&& gameMoves[0][0]==gameMoves[2][0]){
+        }
+         if(gameMoves[0][0]!=null && gameMoves[1][0]!=null && gameMoves[2][0]!=null){
+         if (gameMoves[0][0].equals(gameMoves[1][0]) && gameMoves[0][0].equals(gameMoves[2][0])){
            winner= gameMoves[0][0];
            return winner;
        }
-          if (gameMoves[0][1]==gameMoves[1][1]&& gameMoves[0][1]==gameMoves[2][1]){
+         }
+          if(gameMoves[0][1]!=null && gameMoves[1][1]!=null && gameMoves[2][1]!=null){
+          if (gameMoves[0][1].equals(gameMoves[1][1]) && gameMoves[0][1].equals(gameMoves[2][1])){
            winner= gameMoves[0][1];
            return winner;
        }
-           if (gameMoves[0][2]==gameMoves[1][2]&& gameMoves[0][2]==gameMoves[2][2]){
+          }
+       if(gameMoves[0][2]!=null && gameMoves[1][2]!=null && gameMoves[2][2]!=null){
+           if (gameMoves[0][2].equals(gameMoves[1][2]) && gameMoves[0][2].equals(gameMoves[2][2])){
            winner= gameMoves[0][0];
            return winner;
        }
-            if (gameMoves[0][0]==gameMoves[1][1]&& gameMoves[0][0]==gameMoves[2][2]){
-           winner= gameMoves[0][0];
+           }
+       if(gameMoves[0][0]!=null && gameMoves[1][1]!=null && gameMoves[2][2]!=null){
+            if (gameMoves[0][0].equals(gameMoves[1][1]) && gameMoves[0][0].equals(gameMoves[2][2])){
+           winner = gameMoves[0][0];
            return winner;
        }
-            return null;
+       }
+        if(gameMoves[2][2]!=null && gameMoves[1][1]!=null && gameMoves[0][2]!=null){
+             if (gameMoves[2][2].equals(gameMoves[1][1]) && gameMoves[2][2].equals(gameMoves[0][2])){
+           winner= gameMoves[2][2];
+           return winner;
+       }
+        }
+            
+            return winner;
    }
    
    
