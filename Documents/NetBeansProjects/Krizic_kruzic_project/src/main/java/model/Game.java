@@ -19,6 +19,7 @@ public class Game {
     private  String human;
     
     
+    
     public Game(long gameId, String human){
         
         this.gameId=gameId;  
@@ -30,6 +31,8 @@ public class Game {
     
     public Game(){   
     }
+    
+    
     public List getGameStatus(List gameStatus){
         return gameStatus;
     }
@@ -51,6 +54,7 @@ public class Game {
     public void setHuman(String human){
         this.human= human;
     }
+   
    
    
     

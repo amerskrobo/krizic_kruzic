@@ -1,15 +1,28 @@
 
 package controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.cfg.MapperConfig;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import jdk.nashorn.internal.ir.RuntimeNode;
+import junit.framework.Assert;
+import static junit.framework.Assert.assertEquals;
 
 import model.Game;
 import model.Status;
+import model.Views;
 import org.springframework.http.HttpStatus;
 import static org.springframework.http.RequestEntity.method;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +35,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import static org.junit.Assert.*;
+
 
 @RestController
 public class GameController {
    
    private final AtomicLong counter = new AtomicLong();
-   Game game;
-   String[][] gameMoves;
-   
+   private Game game;
+   private String[][] gameMoves;
+   List stats = new ArrayList();
+   private Status status = new Status();
    
    @RequestMapping(value="game/new", method=GET )
    public Game game(@RequestParam(value="first",defaultValue="computer", required=false) String first,@RequestParam(value="second",required=false) String second){
@@ -45,10 +61,14 @@ public class GameController {
        }   
    }
    @RequestMapping(value="game/status", method=GET)
+   @JsonView(Views.StatusOnly.class)
    public Status status(@RequestParam(value="gameId")long gameId){
        if(gameId==game.getId()){
-       Status status = new Status(gameId,"active",getStatus());
        
+       
+       status.setGame(gameId);
+       status.setStatus("active");
+       status.setGameStatus(getStatus());
        return status;
        }else{
            
@@ -67,21 +87,29 @@ public class GameController {
                
                if(checkWinner().equals(value)){
                    System.out.println("Winner is "+game.getHuman());
+                   status.setCountWins();
                }else{
                    System.out.println("Winner is computer");
+                   status.setCountLoses();
                }
            }
        }
        
    }
    
-   
-   public List getStatus(){
-       List getStatus = new ArrayList();
-       getStatus.add(0, "{row:1,column:1,value:x}");
-       getStatus.add(1, "{row:1,column:1,value:0}");
+   @RequestMapping(value="game/stats", method=GET) 
+   @JsonView(Views.SatsOnly.class)
+   public Map getStatss() throws JsonProcessingException, IOException{
        
-       return getStatus;
+      
+       stats.add(0, status);
+      
+       
+       HashMap map = new HashMap();
+       
+       map.put("status", stats );
+       return map;
+       
    }
    
    public void playHuman(int row,int column,String value){
@@ -182,6 +210,14 @@ public class GameController {
             
             return winner;
    }
+   public List getStatus(){
+       List getStatus = new ArrayList();
+       getStatus.add(0, "{row:1,column:1,value:x}");
+       getStatus.add(1, "{row:1,column:1,value:0}");
+       
+       return getStatus;
+   }
+   
    
    
 }
