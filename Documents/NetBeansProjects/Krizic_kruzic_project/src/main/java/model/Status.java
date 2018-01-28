@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import java.util.List;
 
-@JsonIgnoreProperties({"value"})
+
 @JsonPropertyOrder({ "gameId", "status","gameStatus" })
 public class Status {
     
@@ -19,7 +19,7 @@ public class Status {
     private long gameId;
     @JsonView(Views.StatusOnly.class)
     private String status;
-    private String value;
+    
     private int i;
     @JsonView(Views.SatsOnly.class)
     private int wins=0;
@@ -29,7 +29,11 @@ public class Status {
     private int draws=0;
     
     @JsonView(Views.StatusOnly.class)
+    
     private List gameStatus;
+    
+    
+    
     
     public Status(long gameId,String status,List gameStatus){
         this.gameId=gameId;
@@ -37,9 +41,13 @@ public class Status {
         this.gameStatus=gameStatus;
     }
     
+    
+    
+    
     public Status(){
         
     }
+   
     
     public int getCountWins(){
         return wins;
@@ -52,14 +60,15 @@ public class Status {
     public int getCountDraws(){
         return draws;
     }
-    
-    public String getGameStatus(){
-        int i = (int)gameId;
-        return (String)gameStatus.get(i);
+    @JsonProperty("game")
+    public List getGameStatus(){
+        //int i = (int)gameId;
+       // return (String)gameStatus.get(i);
+        
+        return gameStatus;
+        
     }
-    public String getValue(){
-        return value;
-    }
+   
     public String getStatus(){
         return status;
     }
@@ -76,22 +85,20 @@ public class Status {
     public void setGame(long gameId){
       this.gameId= gameId;
     }
-    public void setValue(String value){
-        this.value=value;
-    }
+   
     
     public void setGameStatus(List gameStatus){
         this.gameStatus=gameStatus;
     }
     
-    public void setCountWins(){
+    public void setWins(){
         
         wins++;
     }
-    public void setCountLoses(){
+    public void setLoses(){
         loses++;
     }
-    public void setCountDraws(){
+    public void setDraws(){
         
         draws++;
     }

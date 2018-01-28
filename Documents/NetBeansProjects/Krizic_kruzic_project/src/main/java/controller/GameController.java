@@ -21,6 +21,7 @@ import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
 
 import model.Game;
+import model.Moves;
 import model.Status;
 import model.Views;
 import org.springframework.http.HttpStatus;
@@ -45,7 +46,7 @@ public class GameController {
    private Game game;
    private String[][] gameMoves;
    List stats = new ArrayList();
-   private Status status = new Status();
+   private Status status;
    
    @RequestMapping(value="game/new", method=GET )
    public Game game(@RequestParam(value="first",defaultValue="computer", required=false) String first,@RequestParam(value="second",required=false) String second){
@@ -53,6 +54,7 @@ public class GameController {
            
            game = new Game(counter.incrementAndGet(),second);
            gameMoves = new String[3][3];
+           
            return game;
           
        }else{
@@ -60,6 +62,7 @@ public class GameController {
            return new Game(counter.incrementAndGet(),first);
        }   
    }
+   
    @RequestMapping(value="game/status", method=GET)
    @JsonView(Views.StatusOnly.class)
    public Status status(@RequestParam(value="gameId")long gameId){
@@ -69,6 +72,7 @@ public class GameController {
        status.setGame(gameId);
        status.setStatus("active");
        status.setGameStatus(getStatus());
+       
        return status;
        }else{
            
@@ -87,10 +91,10 @@ public class GameController {
                
                if(checkWinner().equals(value)){
                    System.out.println("Winner is "+game.getHuman());
-                   status.setCountWins();
+                   status.setWins();
                }else{
                    System.out.println("Winner is computer");
-                   status.setCountLoses();
+                   status.setLoses();
                }
            }
        }
@@ -99,15 +103,13 @@ public class GameController {
    
    @RequestMapping(value="game/stats", method=GET) 
    @JsonView(Views.SatsOnly.class)
-   public Map getStatss() throws JsonProcessingException, IOException{
+   public Map getStatss(){
        
       
        stats.add(0, status);
-      
-       
        HashMap map = new HashMap();
        
-       map.put("status", stats );
+       map.put("stats", stats );
        return map;
        
    }
@@ -210,11 +212,24 @@ public class GameController {
             
             return winner;
    }
+   
+   @JsonView(Views.StatusOnly.class)
    public List getStatus(){
-       List getStatus = new ArrayList();
-       getStatus.add(0, "{row:1,column:1,value:x}");
-       getStatus.add(1, "{row:1,column:1,value:0}");
        
+       List getStatus = new ArrayList<Moves>();
+       
+       for(int i=0;i<3;i++){
+           for(int j=0;j<3;j++){
+               
+               if(gameMoves[i][j]!=null){
+                   getStatus.add(new Moves(i,j,gameMoves[i][j]));
+                  
+               }
+               
+           }
+       }
+       
+       getStatus.add("...");
        return getStatus;
    }
    
