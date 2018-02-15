@@ -1,42 +1,27 @@
 
 package controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
-import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import java.io.IOException;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import jdk.nashorn.internal.ir.RuntimeNode;
-import junit.framework.Assert;
-import static junit.framework.Assert.assertEquals;
-
 import model.Game;
+import model.GameError;
 import model.Moves;
 import model.Status;
 import model.Views;
+import model.Wrapper;
 import org.springframework.http.HttpStatus;
-import static org.springframework.http.RequestEntity.method;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import static org.junit.Assert.*;
+import org.springframework.http.HttpHeaders;
 
 
 @RestController
@@ -45,10 +30,13 @@ public class GameController {
    private final AtomicLong counter = new AtomicLong();
    private Game game;
    private String[][] gameMoves;
-   List stats = new ArrayList();
+   List stats;
    private Status status;
+   private Wrapper wrapper = new Wrapper();
+   
    
    @RequestMapping(value="game/new", method=GET )
+   @JsonView(Views.GameIdOnly.class)
    public Game game(@RequestParam(value="first",defaultValue="computer", required=false) String first,@RequestParam(value="second",required=false) String second){
        if(first.equals("computer")&& !second.isEmpty()){
            
@@ -58,8 +46,9 @@ public class GameController {
            return game;
           
        }else{
+            game = new Game(counter.incrementAndGet(),first);
             
-           return new Game(counter.incrementAndGet(),first);
+           return game;
        }   
    }
    
@@ -69,9 +58,8 @@ public class GameController {
        if(gameId==game.getId()){
        
        
-       status.setGame(gameId);
-       status.setStatus("active");
-       status.setGameStatus(getStatus());
+       status = new Status(game.getId(),"active",getStatus());
+       
        
        return status;
        }else{
@@ -83,34 +71,49 @@ public class GameController {
    }
    
    @RequestMapping(value="game/play", method=GET)
-   public void gamePlay(@RequestParam(value="gameId", required=true)long gameId,@RequestParam(value="row",required=true)int row,@RequestParam(value="column",required=true)int column,@RequestParam(value="value",required=true)String value){
-       if(gameId==game.getId()){
+   public  ResponseEntity<Object> gamePlay(@RequestParam(value="gameId", required=true)long gameId,@RequestParam(value="row",required=true)int row,@RequestParam(value="column",required=true)int column,@RequestParam(value="value",required=true)String value){
+       
+           if(gameId==game.getId() && row>=1 && row<=3 && column>=1 && column<=3 && value.contains("x") || value.contains("o")){
            playHuman(row,column,value);
+           
+           
+           
            playComputer(row,column,value);
            if(checkWinner()!=null){
                
                if(checkWinner().equals(value)){
                    System.out.println("Winner is "+game.getHuman());
+                   String winner = "Winner is "+game.getHuman()+"";
                    status.setWins();
+                   return new ResponseEntity<>((Object)winner,HttpStatus.OK);
                }else{
                    System.out.println("Winner is computer");
+                   String winner = "Winner is computer";
                    status.setLoses();
+                   return new ResponseEntity<>((Object)winner,HttpStatus.OK);
                }
            }
-       }
+           
+           }
+           else{
+                GameError gameError = new GameError(HttpStatus.PRECONDITION_FAILED,"Unijeli ste nepostojano polje ili vrijednos");
+                return new ResponseEntity<>(gameError,new HttpHeaders(),gameError.getStatus());
+           }
        
+       return null;
    }
    
    @RequestMapping(value="game/stats", method=GET) 
    @JsonView(Views.SatsOnly.class)
-   public Map getStatss(){
-       
+   public Map getStats(){
       
-       stats.add(0, status);
-       HashMap map = new HashMap();
+      stats = new ArrayList();
+      stats.add(0, new Status(game.getHuman(),status.getCountWins(),status.getCountLoses(),status.getCountDraws()));
+      
+      
+      wrapper.setMap(stats);
        
-       map.put("stats", stats );
-       return map;
+       return wrapper.getMap();
        
    }
    

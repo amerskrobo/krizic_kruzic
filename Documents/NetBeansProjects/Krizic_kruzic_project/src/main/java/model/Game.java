@@ -3,31 +3,38 @@ package model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonView;
 import java.util.List;
 
 
-@JsonIgnoreProperties({"computer","human"})
+@JsonIgnoreProperties({"computer"})
 public class Game {
     
+    @JsonView(Views.GameIdOnly.class)
+    private long gameId;
     
-    private  long gameId;
     private static String computer="computer";
-    private  String human;
+    
+    @JsonView(Views.SatsOnly.class)
+    private String human;
     
     
     
     public Game(long gameId, String human){
         
         this.gameId=gameId;  
+        
         this.human=human;
     }
     
+   public Game(long gameId){
+       this.gameId=gameId;
+   }
    
-    
+    public Game(String human){
+        this.human=human;
+    }
     
     public Game(){   
     }
@@ -45,6 +52,7 @@ public class Game {
     public String getComputer(){
         return computer;
     }
+    @JsonProperty("name")
     public String getHuman(){
         return human;
     }

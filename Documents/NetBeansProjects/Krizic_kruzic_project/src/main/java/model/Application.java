@@ -5,6 +5,9 @@
  */
 package model;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import controller.GameController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,10 +15,13 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackageClasses=GameController.class)
+
 public class Application {
     
     public static void main(String[]args){
+        System.setProperty("spring.jackson.serialization.INDENT_OUTPUT", "true");
         SpringApplication.run(Application.class, args);
+        
        
                 
     }
