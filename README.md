@@ -2,7 +2,9 @@
 
 Ovaj projekat je imao za zadatak da kreira krizic kruzic igricu u obliku Rest servisa.
 
-Opis aplikacije:
+Video zapis aplikacije : https://youtu.be/ABbuJLUDmZk
+
+Opis aplikacije: 
  - Igra započinje kada se na endpoint: game/new?first={player1}&second={player2} pošalje GET request.
 
 U slučaju kada je parametar player1 jednak computer prvi igrač je računalo, a parametar player2 određuje ime igrača.
