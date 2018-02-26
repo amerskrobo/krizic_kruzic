@@ -1,4 +1,4 @@
-# krizic_kruzic
+# krizic_kruzic_Rest_app
 
 Ovaj projekat je imao za zadatak da kreira krizic kruzic igricu u obliku Rest servisa.
 
