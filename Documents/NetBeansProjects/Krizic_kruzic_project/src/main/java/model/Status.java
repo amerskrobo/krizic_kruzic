@@ -2,6 +2,9 @@
 package model;
 
 
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -10,10 +13,15 @@ import java.util.ArrayList;
 
 
 import java.util.List;
+import java.util.Map;
 
 
 
-@JsonPropertyOrder({ "gameId", "status","gameStatus" })
+
+
+
+@JsonPropertyOrder({ "gameId", "status","winner","gameStatus" })
+
 public class Status extends Game {
     
     
@@ -32,7 +40,12 @@ public class Status extends Game {
     @JsonView(Views.StatusOnly.class)
     private List gameStatus;
     
+    
     private List stats;
+    
+    @JsonInclude(Include.NON_EMPTY)
+    @JsonView(Views.StatusFinished.class)
+    private Map winner;
     
     
     public Status(long gameId,String status,List gameStatus){
@@ -54,8 +67,11 @@ public class Status extends Game {
         
     }
     
- 
     
+    @JsonInclude(Include.NON_EMPTY)
+    public Object getWinner(){
+        return  winner.get(getId());
+    }
     public List getStats(){
         return stats;
     }
@@ -98,7 +114,7 @@ public class Status extends Game {
     }
     
     public void setWins(){
-        ++wins;
+        wins++;
     }
     public void setLoses(){
         loses++;
@@ -110,6 +126,10 @@ public class Status extends Game {
     public void setStats(){
         stats = new ArrayList();
         
+    }
+    
+    public void setWinner(Map winner){
+        this.winner= winner;
     }
     
    
